@@ -4,13 +4,13 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "tsx scripts/ensure-extensions.ts && drizzle-kit push --force && next build",
+    "build": "dotenv -e .env.local -- tsx scripts/ensure-extensions.ts && drizzle-kit push --force && next build",
     "build-without-db": "next build",
     "start": "next start",
     "lint": "next lint",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
-    "db:push": "drizzle-kit push",
+    "db:push": "dotenv -e .env.local -- tsx scripts/ensure-extensions.ts && drizzle-kit push",
     "db:studio": "drizzle-kit studio"
   },
   "dependencies": {
