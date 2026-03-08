@@ -1,6 +1,6 @@
 import { Ionicons } from "@expo/vector-icons"
 import { useLocalSearchParams, useRouter } from "expo-router"
-import { Fragment, useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 import {
   ActivityIndicator,
   Alert,
@@ -30,6 +30,16 @@ interface BookmarkDetail {
   tags: Array<{ id: string; name: string; color: string | null }>
 }
 
+function getBookmarkLoadError(err: unknown): { redirectToLogin: boolean; message: string } {
+  if (err instanceof ApiError && err.status === 401) {
+    return { redirectToLogin: true, message: "" }
+  }
+  if (err instanceof ApiError && err.status === 404) {
+    return { redirectToLogin: false, message: "收藏不存在" }
+  }
+  return { redirectToLogin: false, message: "加载失败" }
+}
+
 export default function BookmarkDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>()
   const router = useRouter()
@@ -46,7 +56,7 @@ export default function BookmarkDetailScreen() {
 
     async function load() {
       try {
-        const data = await requestJson<BookmarkDetail>(`/api/bookmarks/${encodeURIComponent(id!)}`)
+        const data = await requestJson<BookmarkDetail>(`/api/bookmarks/${encodeURIComponent(id)}`)
         if (!cancelled) {
           setBookmark(data)
         }
@@ -54,15 +64,12 @@ export default function BookmarkDetailScreen() {
         if (cancelled) {
           return
         }
-        if (err instanceof ApiError && err.status === 401) {
+        const handled = getBookmarkLoadError(err)
+        if (handled.redirectToLogin) {
           router.replace("/login")
           return
         }
-        if (err instanceof ApiError && err.status === 404) {
-          setError("收藏不存在")
-          return
-        }
-        setError("加载失败")
+        setError(handled.message)
       } finally {
         if (!cancelled) {
           setIsLoading(false)
@@ -177,13 +184,7 @@ function TagList({ tags }: { tags: BookmarkDetail["tags"] }) {
 
 function MarkdownContent({ content }: { content: string }) {
   const elements = useMarkdown(content)
-  return (
-    <View style={{ marginTop: 16 }}>
-      {elements.map((el, i) => (
-        <Fragment key={`md-${i}`}>{el}</Fragment>
-      ))}
-    </View>
-  )
+  return <View style={{ marginTop: 16 }}>{elements}</View>
 }
 
 const styles = StyleSheet.create({

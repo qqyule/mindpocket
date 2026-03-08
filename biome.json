@@ -74,6 +74,18 @@
           }
         }
       }
+    },
+    {
+      "includes": [
+        "apps/native/ios/MindPocketShare/ShareExtensionPreprocessor.js"
+      ],
+      "linter": {
+        "rules": {
+          "style": {
+            "useFilenamingConvention": "off"
+          }
+        }
+      }
     }
   ],
   "javascript": {

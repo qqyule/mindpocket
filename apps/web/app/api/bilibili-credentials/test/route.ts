@@ -14,7 +14,7 @@ export async function POST(request: Request) {
     const body = await request.json()
     const { sessdata, biliJct, buvid3 } = body
 
-    if (!sessdata || !biliJct || !buvid3) {
+    if (!(sessdata && biliJct && buvid3)) {
       return NextResponse.json(
         { error: "Missing required fields: sessdata, biliJct, buvid3" },
         { status: 400 }
@@ -31,7 +31,7 @@ export async function POST(request: Request) {
     )
     const videoInfo = await videoInfoRes.json()
 
-    if (!videoInfo?.data?.aid || !videoInfo?.data?.cid) {
+    if (!(videoInfo?.data?.aid && videoInfo?.data?.cid)) {
       return NextResponse.json({ error: "Failed to fetch test video info" }, { status: 500 })
     }
 

@@ -23,4 +23,4 @@ class ShareExtensionPreprocessor {
     })
   }
 }
-var ExtensionPreprocessingJS = new ShareExtensionPreprocessor()
+window.ExtensionPreprocessingJS = new ShareExtensionPreprocessor()

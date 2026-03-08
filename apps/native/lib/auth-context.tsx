@@ -27,7 +27,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const switchServer = useCallback(async (url: string) => {
     await saveServerUrl(url)
-    await deleteItemAsync("mindpocket_cookie").catch(() => {})
+    await deleteItemAsync("mindpocket_cookie").catch(() => undefined)
     const newClient = resetAuthClient(url)
     setUrl(url)
     setAuthClient(() => newClient)

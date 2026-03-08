@@ -75,7 +75,9 @@ export function createCreateFolderTool(userId: string) {
           .from(folder)
           .where(eq(folder.userId, userId))
 
-        const duplicate = existing.find((f) => normalizeFolderName(f.name) === normalizeFolderName(trimmedName))
+        const duplicate = existing.find(
+          (f) => normalizeFolderName(f.name) === normalizeFolderName(trimmedName)
+        )
         if (duplicate) {
           return { success: true, data: { folder: duplicate } }
         }

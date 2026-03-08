@@ -6,6 +6,7 @@ interface FolderRankingListProps {
 
 export function FolderRankingList({ data }: FolderRankingListProps) {
   const maxCount = Math.max(...data.map((item) => item.count), 1)
+  const keyUsage = new Map<string, number>()
 
   if (data.length === 0) {
     return (
@@ -20,21 +21,30 @@ export function FolderRankingList({ data }: FolderRankingListProps) {
     <View style={styles.card}>
       <Text style={styles.title}>文件夹排行</Text>
       <View style={styles.list}>
-        {data.slice(0, 5).map((item, index) => (
-          <View key={`${item.name}-${index}`} style={styles.item}>
-            <View style={styles.itemHeader}>
-              <Text style={styles.rank}>{index + 1}</Text>
-              <Text style={styles.emoji}>{item.emoji}</Text>
-              <Text numberOfLines={1} style={styles.name}>
-                {item.name}
-              </Text>
-              <Text style={styles.count}>{item.count}</Text>
+        {data.slice(0, 5).map((item, index) => {
+          const baseKey = `${item.name}-${item.emoji}-${item.count}`
+          const duplicateCount = keyUsage.get(baseKey) ?? 0
+          keyUsage.set(baseKey, duplicateCount + 1)
+          const key = duplicateCount === 0 ? baseKey : `${baseKey}-${duplicateCount}`
+
+          return (
+            <View key={key} style={styles.item}>
+              <View style={styles.itemHeader}>
+                <Text style={styles.rank}>{index + 1}</Text>
+                <Text style={styles.emoji}>{item.emoji}</Text>
+                <Text numberOfLines={1} style={styles.name}>
+                  {item.name}
+                </Text>
+                <Text style={styles.count}>{item.count}</Text>
+              </View>
+              <View style={styles.progressBg}>
+                <View
+                  style={[styles.progressFill, { width: `${(item.count / maxCount) * 100}%` }]}
+                />
+              </View>
             </View>
-            <View style={styles.progressBg}>
-              <View style={[styles.progressFill, { width: `${(item.count / maxCount) * 100}%` }]} />
-            </View>
-          </View>
-        ))}
+          )
+        })}
       </View>
     </View>
   )

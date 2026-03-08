@@ -3,6 +3,9 @@ import { getDefaultProvider } from "@/db/queries/ai-provider"
 import { getChatModel } from "@/lib/ai/provider"
 import { createCreateFolderTool, createListFoldersTool } from "@/lib/ai/tools/folder-tools"
 
+const FOLDER_ID_LINE_REGEX = /^FOLDER_ID:\s*([A-Za-z0-9_-]+)\s*$/i
+const NONE_LINE_REGEX = /^NONE$/i
+
 interface ResolveFolderForIngestParams {
   userId: string
   sourceType: "url" | "file" | "extension"
@@ -55,14 +58,14 @@ fileName: ${fileName ?? ""}`,
     })
 
     const text = result.text.trim()
-    const match = text.match(/^FOLDER_ID:\s*([A-Za-z0-9_-]+)\s*$/i)
+    const match = text.match(FOLDER_ID_LINE_REGEX)
     if (match) {
       const folderId = match[1]
       console.info("[auto-folder] choose folder by agent", { folderId, text })
       return folderId
     }
 
-    if (/^NONE$/i.test(text)) {
+    if (NONE_LINE_REGEX.test(text)) {
       console.info("[auto-folder] choose none by agent")
       return null
     }

@@ -2,6 +2,7 @@ import { getItemAsync, setItemAsync } from "expo-secure-store"
 
 const STORAGE_KEY = "mindpocket_server_url"
 const DEFAULT_URL = process.env.EXPO_PUBLIC_API_URL || "http://127.0.0.1:3000"
+const URL_PROTOCOL_REGEX = /^https?:\/\//
 
 let _cached: string | null = null
 
@@ -29,7 +30,7 @@ function normalizeUrl(url: string): string {
   if (normalized.endsWith("/")) {
     normalized = normalized.slice(0, -1)
   }
-  if (!/^https?:\/\//.test(normalized)) {
+  if (!URL_PROTOCOL_REGEX.test(normalized)) {
     normalized = `http://${normalized}`
   }
   return normalized

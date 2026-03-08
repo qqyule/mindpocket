@@ -1,11 +1,10 @@
 import { NextResponse } from "next/server"
-import { auth } from "@/lib/auth"
 import {
   deleteBilibiliCredentials,
-  getBilibiliCredentials,
   hasBilibiliCredentials,
   saveBilibiliCredentials,
 } from "@/db/queries/bilibili-credentials"
+import { auth } from "@/lib/auth"
 
 export async function GET() {
   const session = await auth.api.getSession({
@@ -33,7 +32,7 @@ export async function POST(request: Request) {
     const body = await request.json()
     const { sessdata, biliJct, buvid3 } = body
 
-    if (!sessdata || !biliJct || !buvid3) {
+    if (!(sessdata && biliJct && buvid3)) {
       return NextResponse.json(
         { error: "Missing required fields: sessdata, biliJct, buvid3" },
         { status: 400 }

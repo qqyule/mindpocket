@@ -146,10 +146,10 @@ export function Chat({
             </div>
             <ChatInput
               input={input}
+              onFolderToolsChange={setUseFolderTools}
               onKnowledgeBaseChange={setUseKnowledgeBase}
               onModelChange={setSelectedModelId}
               onSubmit={handleSubmit}
-              onFolderToolsChange={setUseFolderTools}
               selectedModelId={selectedModelId}
               setInput={setInput}
               status={status}
@@ -164,10 +164,10 @@ export function Chat({
           <ChatMessages messages={messages} status={status} />
           <ChatInput
             input={input}
+            onFolderToolsChange={setUseFolderTools}
             onKnowledgeBaseChange={setUseKnowledgeBase}
             onModelChange={setSelectedModelId}
             onSubmit={handleSubmit}
-            onFolderToolsChange={setUseFolderTools}
             selectedModelId={selectedModelId}
             setInput={setInput}
             status={status}

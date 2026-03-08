@@ -5,18 +5,37 @@ interface ChatMessageBubbleProps {
   message: UIMessage
 }
 
+function getPartBaseKey(messageId: string, part: UIMessage["parts"][number]) {
+  switch (part.type) {
+    case "text":
+      return `${messageId}-text-${part.text}`
+    case "reasoning":
+      return `${messageId}-reasoning-${part.text}`
+    case "tool-getInformation":
+      return `${messageId}-tool-${part.state}`
+    default:
+      return `${messageId}-${part.type}`
+  }
+}
+
 export function ChatMessageBubble({ message }: ChatMessageBubbleProps) {
   const isUser = message.role === "user"
+  const keyUsage = new Map<string, number>()
 
   return (
     <View style={[styles.wrapper, isUser ? styles.wrapperUser : styles.wrapperAssistant]}>
       <View style={[styles.bubble, isUser ? styles.bubbleUser : styles.bubbleAssistant]}>
-        {message.parts.map((part, i) => {
+        {message.parts.map((part) => {
+          const baseKey = getPartBaseKey(message.id, part)
+          const duplicateCount = keyUsage.get(baseKey) ?? 0
+          keyUsage.set(baseKey, duplicateCount + 1)
+          const key = duplicateCount === 0 ? baseKey : `${baseKey}-${duplicateCount}`
+
           switch (part.type) {
             case "text":
               return (
                 <Text
-                  key={`${message.id}-${i}`}
+                  key={key}
                   style={[styles.text, isUser ? styles.textUser : styles.textAssistant]}
                 >
                   {part.text}
@@ -24,14 +43,14 @@ export function ChatMessageBubble({ message }: ChatMessageBubbleProps) {
               )
             case "reasoning":
               return (
-                <Text key={`${message.id}-${i}`} style={styles.reasoning}>
+                <Text key={key} style={styles.reasoning}>
                   {part.text}
                 </Text>
               )
             case "tool-getInformation": {
               const output = part.output as unknown[] | undefined
               return (
-                <View key={`${message.id}-${i}`} style={styles.toolCard}>
+                <View key={key} style={styles.toolCard}>
                   <Text style={styles.toolLabel}>
                     {part.state === "output-available"
                       ? `📚 已检索 ${output?.length || 0} 条相关内容`
